@@ -1171,21 +1171,22 @@ function showUploadForm(){
 		noPerms();
 		return 0;
 	}
-	$("#uploadtext").hide();
-	$("#uploadform").show();
-	$("#uploadform_seriously").append('<input type="hidden" name="dir" value="'+cdir+'">');
+	$("#upload_finput").click();
+	$("#upload_finput").change(function(){
+		$("#uploadform").submit();
+	});
+	$("#uploadform").append('<input type="hidden" name="dir" value="'+cdir+'">');
 }
 function startUpload(){
 	if($("#upload_finput").val()!=""){
-		$("#uploadform_progress").show();
+		$("#uploadtext_progress").show();
 		return true;
 	}else{
 		return false;
 	}
 }
 function stopUpload(data){
-	$("#uploadform_progress").hide();
-	$("#uploadform").hide();
+	$("#uploadtext_progress").hide();
 	if(data.status==0){
 		$("#uploadtext_really").html('File succesfully uploaded');
 		$("#uploadtext_really").delay(1000).fadeOut('whatev',function(){
@@ -1227,8 +1228,8 @@ function stopUpload(data){
 						$(this).dialog('close');
 					},
 					'Overwrite all': function() {
-						$("#uploadform_seriously").append('<input type="hidden" id="uploadform_force" name="force" value="force">');
-						$("#uploadform_seriously").submit();
+						$("#uploadform").append('<input type="hidden" id="uploadform_force" name="force" value="force">');
+						$("#uploadform").submit();
 						$(this).dialog('close');
 					}
 				},
@@ -1244,7 +1245,6 @@ function stopUpload(data){
 	}else if(data.status.length>0){
 		$("#editfile_modal").append('<h3 class="no">Error</h3> Error code '+data.status+'.');
 	}
-	$("#uploadtext").show();
 	if($("#uploadform_force").length != 0){
 		$("#uploadform_force").remove();
 	}

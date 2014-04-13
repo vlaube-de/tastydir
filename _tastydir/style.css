@@ -637,17 +637,14 @@ ul{
 		float:right;
 		margin:10px 10px 10px 0;
 	}
-	#uploadform, #uploadform_progress, #hacky_iframe{
+	#uploadform, #uploadtext_progress, #hacky_iframe{
 		display:none;
 	}
-	#uploadform_progress, #uploadform_really{
-		float:right;
-	}
-	#uploadform_progress{
+	#uploadtext_progress{
 		margin-left:5px;
 		margin-top:2px;
 	}
-	#uploadform_progress img{
+	#uploadtext_progress img{
 		vertical-align:baseline;
 	}
 
