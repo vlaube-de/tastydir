@@ -151,7 +151,7 @@ function updateFiles(dir){
 										'<td><a class="fperms" href="javascript:;">'+ffperms+'</a></td>'+
 										'<td class="actions">'+
 											'<img class="action_editfolder" '+ldisabled+' title="Edit" alt="Edit" src="_tastydir/images/page_white_edit.png">'+
-											'<img class="action_deletefolder" '+ldisabled+' title="Delete" alt="Delete" src="_tastydir/images/doc_shred.png">'+
+											'<img class="action_deletefolder" '+ldisabled+' title="Delete" alt="Delete" src="_tastydir/images/page_white_delete.png">'+
 										'</td>'+
 									'</tr>');
 						$("#folder"+i+" .action_editfolder").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); editFolderDialog(data.cdir+'/'+fname); });
@@ -196,7 +196,7 @@ function updateFiles(dir){
 										'<td><a class="fperms" href="javascript:;">'+ffperms+'</a></td>'+
 										'<td class="actions">'+
 											'<img class="action_editfile" '+fbins+'title="Edit" alt="Edit" src="_tastydir/images/page_white_edit.png">'+
-											'<img class="action_deletefile" '+ldisabled+'title="Delete" alt="Delete" src="_tastydir/images/doc_shred.png">'+
+											'<img class="action_deletefile" '+ldisabled+'title="Delete" alt="Delete" src="_tastydir/images/page_white_delete.png">'+
 											'<img class="action_copyfile" '+ldisabled+'title="Copy/Move" alt="Copy/Move" src="_tastydir/images/page_copy.png">'+
 										'</td>'+
 									'</tr>')
