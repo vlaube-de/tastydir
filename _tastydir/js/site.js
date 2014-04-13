@@ -1195,9 +1195,9 @@ function stopUpload(data){
 	}else if(data.status==1){
 		$("#uploadtext_really").html('Waiting for confirmation...');
 		if(data.type=='dir'){
-			$("#editfile_modal").html('<strong>'+($("#upload_finput").val())+'</strong> already exists, and it\'s a folder, so overwriting it is a bad idea. If you\'d like to, you can remove the folder, then try uploading the file again.');
+			$("#editfile_modal").html('At least one of the files already exists, and it\'s a folder, so overwriting it is a bad idea. If you\'d like to, you can remove the folder, then try uploading the file again.');
 			$("#editfile_modal").dialog({
-				title: 'File upload - <strong>'+($("#upload_finput").val())+'</strong> already exists',
+				title: 'Cannot overwrite folders',
 				modal: true,
 				width: 500,
 				height: 215,
@@ -1211,22 +1211,22 @@ function stopUpload(data){
 				}
 			});
 		}else if(data.type.length>0){
-			$("#editfile_modal").html('<strong>'+($("#upload_finput").val())+'</strong> already exists. Would you like to overwrite it?');
+			$("#editfile_modal").html('At least one of the files already exists.');
 			$("#editfile_modal").dialog({
-				title: 'File upload - <strong>'+($("#upload_finput").val())+'</strong> already exists',
+				title: 'Overwrite existing files?',
 				modal: true,
 				width: 500,
 				height: 215,
 				buttons: {
-					'No': function() {
-						$("#uploadtext_really").html('<strong>'+($("#upload_finput").val())+'</strong> not uploaded.');
+					'Cancel': function() {
+						$("#uploadtext_really").html('Some files were not uploaded.');
 						$("#uploadtext_really").delay(1000).fadeOut('whatev',function(){
 							$(this).html('Upload file');
 							$(this).fadeIn('whatev');
 						});
 						$(this).dialog('close');
 					},
-					'Yes': function() {
+					'Overwrite all': function() {
 						$("#uploadform_seriously").append('<input type="hidden" id="uploadform_force" name="force" value="force">');
 						$("#uploadform_seriously").submit();
 						$(this).dialog('close');

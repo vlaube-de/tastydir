@@ -128,7 +128,7 @@ if($auth['use']){
 						<div id="uploadform_progress"><img src="_tastydir/images/loading.gif"></div>
 						<div id="uploadform_really">
 							<form enctype="multipart/form-data" action="_tastydir/do.php" method="POST" onsubmit="return startUpload();" target="hacky_iframe" id="uploadform_seriously">
-								<input name="file" type="file" id="upload_finput">
+								<input name="files[]" type="file" multiple id="upload_finput">
 								<input type="submit" value="Upload">
 							</form>
 						</div>

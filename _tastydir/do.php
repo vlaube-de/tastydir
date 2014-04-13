@@ -363,21 +363,23 @@ if(!empty($_GET['delfld'])){
 //				  |_|
 //
 
-if( isset($_FILES['file']) && isset($_POST['dir']) ){
+if( isset($_FILES['files']) && isset($_POST['dir']) ){
 	// status codes:
 	// 0 	ok
-	// 1	file already exists
+	// 1	at least one of the files already exists
 	// 2	couldn't upload
 	
 	$dest=$_POST['dir'].'/';
-	$where=$dest.basename($_FILES['file']['name']);
-	
-	$ret=array('status'=>0);
-	if( file_exists($where) && !isset($_POST['force']) ){
-		$ret['status']=1;
-		$ret['type']=is_dir($where) ? 'dir' : 'file';
-	}elseif(!@move_uploaded_file($_FILES['file']['tmp_name'], $where)){
-		$ret['status']=2;
+
+	for($i=0; $i<count($_FILES['files']['name']); $i++) {
+		$where=$dest.basename($_FILES['files']['name'][$i]);
+		$ret=array('status'=>0);
+		if( file_exists($where) && !isset($_POST['force']) ){
+			$ret['status']=1;
+			$ret['type']=is_dir($where) ? 'dir' : 'file';
+		}elseif(!@move_uploaded_file($_FILES['files']['tmp_name'][$i], $where)){
+			$ret['status']=2;
+		}
 	}
 	
 	?>
