@@ -382,11 +382,7 @@ if( isset($_FILES['files']) && isset($_POST['dir']) ){
 		}
 	}
 	
-	?>
-	<script>
-		window.top.window.stopUpload(<?php echo json_encode($ret); ?>);
-	</script>
-	<?php
+	echo json_encode($ret);
 	die();
 }
 

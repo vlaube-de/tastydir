@@ -637,7 +637,7 @@ ul{
 		float:right;
 		margin:10px 10px 10px 0;
 	}
-	#uploadform, #uploadtext_progress, #hacky_iframe{
+	#upload_finput,#uploadtext_progress{
 		display:none;
 	}
 	#uploadtext_progress{

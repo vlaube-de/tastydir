@@ -1166,27 +1166,40 @@ function chmod(path, fperms){
 //				  |_|
 //
 
-function showUploadForm(){
+function showUploadForm(useForce){
 	if(!loggedin){
 		noPerms();
 		return 0;
 	}
 	$("#upload_finput").click();
 	$("#upload_finput").change(function(){
-		$("#uploadform").submit();
-	});
-	$("#uploadform").append('<input type="hidden" name="dir" value="'+cdir+'">');
-}
-function startUpload(){
-	if($("#upload_finput").val()!=""){
+		var fd = new FormData();
+		for (var i = 0; i < this.files.length; i++) {
+			var file = this.files[i];
+			fd.append("files[]", file);
+		};
+		fd.append("dir", cdir);
+		if(useForce){
+			fd.append("force", "force");
+		}
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '_tastydir/do.php', true);
+
+		// show loading animation
 		$("#uploadtext_progress").show();
-		return true;
-	}else{
-		return false;
-	}
+
+		xhr.onload = function() {
+			$("#uploadtext_progress").hide();
+
+			if (this.status !== 200) return;
+
+			stopUpload(JSON.parse(this.response));
+		};
+
+		xhr.send(fd);
+	});
 }
 function stopUpload(data){
-	$("#uploadtext_progress").hide();
 	if(data.status==0){
 		$("#uploadtext_really").html('File succesfully uploaded');
 		$("#uploadtext_really").delay(1000).fadeOut('whatev',function(){
@@ -1228,8 +1241,8 @@ function stopUpload(data){
 						$(this).dialog('close');
 					},
 					'Overwrite all': function() {
-						$("#uploadform").append('<input type="hidden" id="uploadform_force" name="force" value="force">');
-						$("#uploadform").submit();
+						var useForce = true;
+						showUploadForm(useForce)
 						$(this).dialog('close');
 					}
 				},
@@ -1244,9 +1257,6 @@ function stopUpload(data){
 		$("#editfile_modal").append('<h3 class="no">Error</h3> Access denied.');
 	}else if(data.status.length>0){
 		$("#editfile_modal").append('<h3 class="no">Error</h3> Error code '+data.status+'.');
-	}
-	if($("#uploadform_force").length != 0){
-		$("#uploadform_force").remove();
 	}
 	if(data.status==0){
 		updateFiles(document.location.hash.substr(1));
