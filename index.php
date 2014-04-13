@@ -124,7 +124,7 @@ if($auth['use']){
 					<div class="makefile"><a href="javascript:;" onClick="createFolderDialog(cdir);">Create folder <img src="_tastydir/images/folder_add.png" alt="Create folder" title="Create folder"></a></div>
 				</div>
 				<div id="uploadfile">
-					<input name="files[]" type="file" multiple id="upload_finput">
+					<input type="file" multiple id="upload_finput">
 					<div id="uploadtext">
 						<img src="_tastydir/images/loading.gif" id="uploadtext_progress">
 						<a href="javascript:;" onClick="showUploadForm();"><span id="uploadtext_really">Upload file</span> <img src="_tastydir/images/page_white_get.png" alt="Upload file" title="Upload file"></a>
