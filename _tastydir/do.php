@@ -55,7 +55,7 @@ foreach($reqs as $req){
 		foreach($inv as $in){
 			if(substr($reqq,0,strlen($in)) == $in){
 				$ret=array('status'=>100);
-				echo $_GET['cb']."(".json_encode($ret).");";
+				echo json_encode($ret);
 				die();
 			}
 		}
@@ -118,8 +118,8 @@ if(isset($_GET['d'])){
 			}
 		}
 	}
-	$arr=array('jsonlock'=>$_GET['lock'],'cdir'=>$cdir,'cdirs'=>$cdirs,'dirs'=>$dirs,'files'=>$files);
-	echo $_GET['cb']."(".json_encode($arr).");";
+	$ret=array('jsonlock'=>intval($_GET['lock']),'cdir'=>$cdir,'cdirs'=>$cdirs,'dirs'=>$dirs,'files'=>$files);
+	echo json_encode($ret);
 	die();
 }
 
@@ -138,7 +138,7 @@ if(!empty($_GET['getinfo'])){
 	$ret=array('status'=>0);
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	$stat=@stat($f);
@@ -147,17 +147,17 @@ if(!empty($_GET['getinfo'])){
 	$ret['f']=$stat;
 	$ret['u']=$ui;
 	$ret['g']=$gi;
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
 if(isset($_GET['lt'])){
 	if($win){
-		$lt=array();
+		$ret=array();
 		foreach(range('c','z') as $ltr){
 			if(is_dir($ltr.':/')) $lt[]=strtoupper($ltr);
 		}
-		echo $_GET['cb']."(".json_encode($lt).");";
+		echo json_encode($ret);
 	}
 	die();
 }
@@ -178,12 +178,12 @@ if(!empty($_GET['getf'])){
 	$ret=array('status'=>0,'data'=>'');
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(is_binary($f)){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(filesize($f) > 0){
@@ -193,7 +193,7 @@ if(!empty($_GET['getf'])){
 		clearstatcache();
 		$ret['data']=$file;
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -213,13 +213,13 @@ if(!empty($_GET['editf']) && isset($_POST['fdata']) ){
 	if(file_exists($f)){
 		if(!is_writable($f)){
 			$ret['status']=1;
-			echo $_GET['cb']."(".json_encode($ret).");";
+			echo json_encode($ret);
 			die();
 		}
 	}else{
 		if(!is_writable(dirname($f))){
 			$ret['status']=1;
-			echo $_GET['cb']."(".json_encode($ret).");";
+			echo json_encode($ret);
 			die();
 		}
 	}
@@ -231,19 +231,19 @@ if(!empty($_GET['editf']) && isset($_POST['fdata']) ){
 	}
 	if($invalid){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	$fh = @fopen($f, "wb");
 	if(!$fh){
 		$ret['status']=3;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	fwrite($fh,$data);
 	fclose($fh);
 	clearstatcache();
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -264,20 +264,20 @@ if(!empty($_GET['delf'])){
 	$ret=array('status'=>0);
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!is_writable($f)){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!@unlink($f)){
 		$ret['status']=3;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -298,7 +298,7 @@ if(!empty($_GET['mkdir'])){
 	$ret=array('status'=>0);
 	if(!is_writable(dirname($f))){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	$invalid=false;
@@ -309,15 +309,15 @@ if(!empty($_GET['mkdir'])){
 	}
 	if($invalid){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!@mkdir($f)){
 		$ret['status']=3;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -338,20 +338,20 @@ if(!empty($_GET['delfld'])){
 	$ret=array('status'=>0);
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!is_writable($f)){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!@deleteAll($f)){
 		$ret['status']=3;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -398,7 +398,7 @@ if(!empty($_GET['fcheck'])){
 	$f=stripslashes(rawurldecode($_GET['fcheck']));
 	$ret['exists']=@file_exists($f);
 	$ret['type']=@is_dir($f) ? 'dir' : 'file';
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -422,12 +422,12 @@ if(!empty($_GET['copy']) && $_GET['copy']=='copy'){
 	$ret=array('status'=>0);
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!is_writable(dirname($to))){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	$invalid=false;
@@ -438,15 +438,15 @@ if(!empty($_GET['copy']) && $_GET['copy']=='copy'){
 	}
 	if($invalid){
 		$ret['status']=3;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!@copy($f,$to)){
 		$ret['status']=4;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -463,17 +463,17 @@ if(!empty($_GET['copy']) && $_GET['copy']=='move'){
 	$ret=array('status'=>0);
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!is_writable($f)){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!is_writable(dirname($to))){
 		$ret['status']=3;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	$invalid=false;
@@ -484,15 +484,15 @@ if(!empty($_GET['copy']) && $_GET['copy']=='move'){
 	}
 	if($invalid){
 		$ret['status']=4;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!@rename($f,$to)){
 		$ret['status']=5;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -619,12 +619,12 @@ if(!empty($_GET['getsize'])){
 	$ret=array('status'=>0);
 	if(!file_exists($img)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!list($width, $height, $i_type, $i_attr) = @getimagesize($img)){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	$ret['width']=$width;
@@ -659,7 +659,7 @@ if(!empty($_GET['getsize'])){
 			}
 		}
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 
@@ -680,15 +680,15 @@ if(!empty($_GET['chmod']) && !empty($_GET['to'])){
 	$ret=array('status'=>0);
 	if(!file_exists($f)){
 		$ret['status']=1;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
 	if(!@chmod($f,octdec('0'.$to))){
 		$ret['status']=2;
-		echo $_GET['cb']."(".json_encode($ret).");";
+		echo json_encode($ret);
 		die();
 	}
-	echo $_GET['cb']."(".json_encode($ret).");";
+	echo json_encode($ret);
 	die();
 }
 

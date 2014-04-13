@@ -94,145 +94,146 @@ function updateFiles(dir){
 		/* here we assign a random number to a variable called jsonlock... */
 		jsonlock=Math.floor(Math.random()*99999);
 		/* then do the json request */
-		$.getJSON(t_dn+"_tastydir/do.php?d="+urlencode(dir)+"&lock="+jsonlock+"&cb=?", function(data){
+		$.getJSON(t_dn+"_tastydir/do.php?d="+urlencode(dir)+"&lock="+jsonlock, function(data){
 			var i, totalhref='', fname, fsize, fperms, nofiles=0, fbin, finbs, ldisabled, noperms='', ffperms, firstpart=false, showdirs=false, pathhtml, pathfname;
 			/* 	callback for json request: jsonlock has the json lock from when we initially started the request - we send it to the dir function and it sends it back
 				if the jsonlock var isn't the same as the one above then another request has taken place and we need to stop updating everything
 				because if we do update it we'll get two sets of results on top of each other and that's not cool
 			*/
-			if(jsonlock == data.jsonlock){
-				cdir=data.cdir.escape();
-				t_cfiles=data;
-				/* if the result is obsolete we just drop it, otherwise proceed */
-				if(loggedin){
-					ldisabled='class="enabled" ';
-				}else{
-					ldisabled='class="disabled" ';
-				}
-				$("tr.loading").remove();
-				for(i in data.cdirs){
-					pathfname=data.cdirs[i].escape();
-					totalhref+=data.cdirs[i].escape();
-					if(data.cdirs[i]!='/') totalhref=totalhref+'/';
-					if(!loggedin)
-						if(totalhref==t_path+'/'){ pathfname='/'; showdirs=true; }
-					if(showdirs || loggedin){
-						pathhtml='<div class="pathpart"><a id="path'+i+'" href="'+'#'+urlencode(totalhref)+'">'+pathfname+'<div class="breadcrumb"></div></a></div>';
-						if(firstpart){
-							$("#path").append(pathhtml);
-						}else{
-							$("#path").html(pathhtml);
-						}
-						firstpart=true;
-					}
-				}
-				if(!obIsEmpty(data.dirs)){
-					for(i in data.dirs){
-						if(data.dirs[i]){
-							fname=data.dirs[i]['n'].escape();
-							fsize=data.dirs[i]['s'];
-							fperms=data.dirs[i]['p'];
-							ffperms=data.dirs[i]['fp'];
-							if(fperms=='?---------'){
-								noperms=' noperms';
-							}else{
-								noperms='';
-							}
-						}else{
-							fname='ERROR';
-							fsize='';
-							fperms='';
-							ffperms='';
-						}
-						$("#files")
-						.append(	'<tr class="frow'+noperms+'" id="folder'+i+'">'+
-										'<td class="fcell folder"><a class="fname folder" href="'+'#'+urlencode(data.cdir+'/'+fname)+'">'+fname+'</a></td>'+
-										'<td><span class="fsize">'+fsize+'</span></td>'+
-										'<td><a class="fperms" href="javascript:;">'+ffperms+'</a></td>'+
-										'<td class="actions">'+
-											'<img class="action_editfolder" '+ldisabled+' title="Edit" alt="Edit" src="_tastydir/images/page_white_edit.png">'+
-											'<img class="action_deletefolder" '+ldisabled+' title="Delete" alt="Delete" src="_tastydir/images/page_white_delete.png">'+
-										'</td>'+
-									'</tr>');
-						$("#folder"+i+" .action_editfolder").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); editFolderDialog(data.cdir+'/'+fname); });
-						$("#folder"+i+" .action_deletefolder").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); deleteFolder(data.cdir+'/'+fname); });
-						$("#folder"+i+" .fperms").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); fperms=$(this).children('span').html(); chmod(data.cdir+'/'+fname,fperms); });
-					}
-				}else{
-					nofiles+=1;
-				}
-				if(!obIsEmpty(data.files)){
-					for(i in data.files){
-						if(data.files[i]){
-							fname=data.files[i]['n'].escape();
-							fsize=data.files[i]['s'];
-							fperms=data.files[i]['p'];
-							ffperms=data.files[i]['fp'];
-							ftype=data.files[i]['t'];
-							fbin=data.files[i]['b'];
-							if(fbin=='true' || !loggedin){
-								fbins='class="disabled" ';
-							}else{
-								fbins='class="enabled" ';
-							}
-							if(fperms=='?---------'){
-								noperms=' noperms';
-							}else{
-								noperms='';
-							}
-						}else{
-							fname='ERROR';
-							fsize='';
-							fperms='';
-							ffperms='';
-							ftype='';
-							fbin='';
-							fbins='';
-						}
-						$("#files")
-						.append(	'<tr class="frow'+noperms+'" id="file'+i+'">'+
-										'<td class="fcell file"><a class="fname file action_downloadfile"' + ((ftype!='img') ? ' href="_tastydir/do.php?download='+urlencode(data.cdir+'/'+fname)+'" target="_blank"' : ' href="javascript:;"') + '>'+fname+'</a></td>'+
-										'<td><span class="fsize">'+fsize+'</span></td>'+
-										'<td><a class="fperms" href="javascript:;">'+ffperms+'</a></td>'+
-										'<td class="actions">'+
-											'<img class="action_editfile" '+fbins+'title="Edit" alt="Edit" src="_tastydir/images/page_white_edit.png">'+
-											'<img class="action_deletefile" '+ldisabled+'title="Delete" alt="Delete" src="_tastydir/images/page_white_delete.png">'+
-											'<img class="action_copyfile" '+ldisabled+'title="Copy/Move" alt="Copy/Move" src="_tastydir/images/page_copy.png">'+
-										'</td>'+
-									'</tr>')
-						$("#file"+i+" .fname").css('background',"url('_tastydir/images/file_"+ftype+".png') no-repeat");
-						$("#file"+i+" .action_editfile").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); editFileDialog(data.cdir+'/'+fname); });
-						$("#file"+i+" .action_deletefile").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); deleteFile(data.cdir+'/'+fname); });
-						$("#file"+i+" .action_copyfile").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); copyBar(data.cdir+'/'+fname); });
-						if(ftype=='img'){
-							$("#file"+i+" .action_downloadfile").click(function(){ fname=$(this).html(); lightboxImage(data.cdir+'/'+fname); });
-						}
-						$("#file"+i+" .fperms").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); fperms=$(this).children('span').html(); chmod(data.cdir+'/'+fname,fperms); });
-					}
-				}else{
-					nofiles+=1;
-				}
-				if(nofiles==2){
-					$("#files").append('<tr><td colspan="4" class="no" style="text-align:center;">Directory is either empty or could not be accessed!</td></tr>');
-				}
-				/* image fading */
-				$("tr.frow").hover(
-					function(){
-						$(this).find('td').stop(true,true).animate({backgroundColor:'#f6f6f6'},'whatev');
-					},
-					function(){
-						$(this).find('td').stop(true,true).animate({backgroundColor:'white'},'whatev');
-					}
-				);
-				$("td.actions").find("img.enabled").hover(
-					function(){
-						$(this).stop(true,true).fadeTo('fast',1);
-					},
-					function(){
-						$(this).stop(true,true).fadeTo('fast',0.6);
-					}
-				);
+			if(jsonlock !== data.jsonlock) return;
+
+			cdir=data.cdir.escape();
+			t_cfiles=data;
+			/* if the result is obsolete we just drop it, otherwise proceed */
+			if(loggedin){
+				ldisabled='class="enabled" ';
+			}else{
+				ldisabled='class="disabled" ';
 			}
+			$("tr.loading").remove();
+			for(i in data.cdirs){
+				pathfname=data.cdirs[i].escape();
+				totalhref+=data.cdirs[i].escape();
+				if(data.cdirs[i]!='/') totalhref=totalhref+'/';
+				if(!loggedin)
+					if(totalhref==t_path+'/'){ pathfname='/'; showdirs=true; }
+				if(showdirs || loggedin){
+					pathhtml='<div class="pathpart"><a id="path'+i+'" href="'+'#'+urlencode(totalhref)+'">'+pathfname+'<div class="breadcrumb"></div></a></div>';
+					if(firstpart){
+						$("#path").append(pathhtml);
+					}else{
+						$("#path").html(pathhtml);
+					}
+					firstpart=true;
+				}
+			}
+			if(!obIsEmpty(data.dirs)){
+				for(i in data.dirs){
+					if(data.dirs[i]){
+						fname=data.dirs[i]['n'].escape();
+						fsize=data.dirs[i]['s'];
+						fperms=data.dirs[i]['p'];
+						ffperms=data.dirs[i]['fp'];
+						if(fperms=='?---------'){
+							noperms=' noperms';
+						}else{
+							noperms='';
+						}
+					}else{
+						fname='ERROR';
+						fsize='';
+						fperms='';
+						ffperms='';
+					}
+					$("#files")
+					.append(	'<tr class="frow'+noperms+'" id="folder'+i+'">'+
+									'<td class="fcell folder"><a class="fname folder" href="'+'#'+urlencode(data.cdir+'/'+fname)+'">'+fname+'</a></td>'+
+									'<td><span class="fsize">'+fsize+'</span></td>'+
+									'<td><a class="fperms" href="javascript:;">'+ffperms+'</a></td>'+
+									'<td class="actions">'+
+										'<img class="action_editfolder" '+ldisabled+' title="Edit" alt="Edit" src="_tastydir/images/page_white_edit.png">'+
+										'<img class="action_deletefolder" '+ldisabled+' title="Delete" alt="Delete" src="_tastydir/images/page_white_delete.png">'+
+									'</td>'+
+								'</tr>');
+					$("#folder"+i+" .action_editfolder").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); editFolderDialog(data.cdir+'/'+fname); });
+					$("#folder"+i+" .action_deletefolder").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); deleteFolder(data.cdir+'/'+fname); });
+					$("#folder"+i+" .fperms").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); fperms=$(this).children('span').html(); chmod(data.cdir+'/'+fname,fperms); });
+				}
+			}else{
+				nofiles+=1;
+			}
+			if(!obIsEmpty(data.files)){
+				for(i in data.files){
+					if(data.files[i]){
+						fname=data.files[i]['n'].escape();
+						fsize=data.files[i]['s'];
+						fperms=data.files[i]['p'];
+						ffperms=data.files[i]['fp'];
+						ftype=data.files[i]['t'];
+						fbin=data.files[i]['b'];
+						if(fbin=='true' || !loggedin){
+							fbins='class="disabled" ';
+						}else{
+							fbins='class="enabled" ';
+						}
+						if(fperms=='?---------'){
+							noperms=' noperms';
+						}else{
+							noperms='';
+						}
+					}else{
+						fname='ERROR';
+						fsize='';
+						fperms='';
+						ffperms='';
+						ftype='';
+						fbin='';
+						fbins='';
+					}
+					$("#files")
+					.append(	'<tr class="frow'+noperms+'" id="file'+i+'">'+
+									'<td class="fcell file"><a class="fname file action_downloadfile"' + ((ftype!='img') ? ' href="_tastydir/do.php?download='+urlencode(data.cdir+'/'+fname)+'" target="_blank"' : ' href="javascript:;"') + '>'+fname+'</a></td>'+
+									'<td><span class="fsize">'+fsize+'</span></td>'+
+									'<td><a class="fperms" href="javascript:;">'+ffperms+'</a></td>'+
+									'<td class="actions">'+
+										'<img class="action_editfile" '+fbins+'title="Edit" alt="Edit" src="_tastydir/images/page_white_edit.png">'+
+										'<img class="action_deletefile" '+ldisabled+'title="Delete" alt="Delete" src="_tastydir/images/page_white_delete.png">'+
+										'<img class="action_copyfile" '+ldisabled+'title="Copy/Move" alt="Copy/Move" src="_tastydir/images/page_copy.png">'+
+									'</td>'+
+								'</tr>')
+					$("#file"+i+" .fname").css('background',"url('_tastydir/images/file_"+ftype+".png') no-repeat");
+					$("#file"+i+" .action_editfile").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); editFileDialog(data.cdir+'/'+fname); });
+					$("#file"+i+" .action_deletefile").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); deleteFile(data.cdir+'/'+fname); });
+					$("#file"+i+" .action_copyfile").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); copyBar(data.cdir+'/'+fname); });
+					if(ftype=='img'){
+						$("#file"+i+" .action_downloadfile").click(function(){ fname=$(this).html(); lightboxImage(data.cdir+'/'+fname); });
+					}
+					$("#file"+i+" .fperms").click(function(){ fname=$(this).parents('.frow').children('.fcell').children('.fname').html(); fperms=$(this).children('span').html(); chmod(data.cdir+'/'+fname,fperms); });
+				}
+			}else{
+				nofiles+=1;
+			}
+			if(nofiles==2){
+				$("#files").append('<tr><td colspan="4" class="no" style="text-align:center;">Directory is either empty or could not be accessed!</td></tr>');
+			}
+			/* image fading */
+			$("tr.frow").hover(
+				function(){
+					$(this).find('td').stop(true,true).animate({backgroundColor:'#f6f6f6'},'whatev');
+				},
+				function(){
+					$(this).find('td').stop(true,true).animate({backgroundColor:'white'},'whatev');
+				}
+			);
+			$("td.actions").find("img.enabled").hover(
+				function(){
+					$(this).stop(true,true).fadeTo('fast',1);
+				},
+				function(){
+					$(this).stop(true,true).fadeTo('fast',0.6);
+				}
+			);
+
 			$("#files_outer").slideDown('slow');
 		});
 	});
@@ -299,7 +300,7 @@ function getInfo(path,callback){
 		noPerms();
 		return 0;
 	}
-	$.getJSON(t_dn+"_tastydir/do.php?getinfo="+urlencode(path)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?getinfo="+urlencode(path), function(data){
 		if(data.status>0){
 			$("#editfile_modal").dialog({
 				title: 'Info Error - '+name.escape(),
@@ -331,7 +332,7 @@ function getInfo(path,callback){
 
 function getLetters(){
 	var letters='', i;
-	$.getJSON(t_dn+"_tastydir/do.php?lt&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?lt", function(data){
 		for(i in data){
 			letters+='<button id="letter'+i+'" onclick="document.location=\''+'#'+urlencode(data[i]+':/')+'\';">'+data[i]+':\\</button>';
 		}
@@ -359,7 +360,7 @@ function editFileDialog(path){
 		resizable:false,
 		draggable:false
 	});
-	$.getJSON(t_dn+"_tastydir/do.php?getf="+urlencode(path)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?getf="+urlencode(path), function(data){
 		$("#loading_modal").dialog('close');
 		if(data.status>0){
 			$("#editfile_modal").dialog({
@@ -464,7 +465,7 @@ function createFileDialog(path){
 
 function writeNewFile(path,fdata){
 	var name=basename(path);
-	$.getJSON(t_dn+"_tastydir/do.php?fcheck="+urlencode(path)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?fcheck="+urlencode(path), function(data){
 		if(data.exists){
 			if(data.type=='dir'){
 				$("#editfile_modal").html('<strong>'+name.escape()+'</strong> already exists, and it\'s a folder, so overwriting it is a bad idea. If you\'d like to, you can remove the folder, then try creating the file again.');
@@ -524,7 +525,7 @@ function writeNewFile(path,fdata){
 function writeFile(path,fdata){
 	var name=basename(path);
 	$.ajax({
-		url: t_dn+"_tastydir/do.php?editf="+urlencode(path)+"&cb=?",
+		url: t_dn+"_tastydir/do.php?editf="+urlencode(path),
 		dataType: 'json',
 		type: 'POST',
 		data: 'fdata='+fdata,
@@ -634,7 +635,7 @@ function createFolderDialog(path){
 
 function createFolder(path){
 	var name=basename(path);
-	$.getJSON(t_dn+"_tastydir/do.php?fcheck="+urlencode(path)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?fcheck="+urlencode(path), function(data){
 		if(data.exists){
 			$("#editfile_modal").html('<strong>'+name.escape()+'</strong> already exists.');
 			$("#editfile_modal").dialog({
@@ -658,7 +659,7 @@ function createFolder(path){
 }
 
 function mkdir(name,path){
-	$.getJSON(t_dn+"_tastydir/do.php?mkdir="+urlencode(path)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?mkdir="+urlencode(path), function(data){
 		if(data.status>0){
 			$("#editfile_modal").dialog({
 				title: 'Folder Creation Error - '+name.escape(),
@@ -713,7 +714,7 @@ function deleteFile(path){
 		buttons: {
 			'Delete': function() {
 				$(this).dialog('close');
-				$.getJSON(t_dn+"_tastydir/do.php?delf="+urlencode(path)+"&cb=?", function(data){
+				$.getJSON(t_dn+"_tastydir/do.php?delf="+urlencode(path), function(data){
 					if(data.status>0){
 						$("#editfile_modal").dialog({
 							title: 'File Deletion Error - '+name.escape(),
@@ -784,7 +785,7 @@ function deleteFolder(path){
 					resizable:false,
 					draggable:false
 				});
-				$.getJSON(t_dn+"_tastydir/do.php?delfld="+urlencode(path)+"&cb=?", function(data){
+				$.getJSON(t_dn+"_tastydir/do.php?delfld="+urlencode(path), function(data){
 				$("#loading_modal").dialog('close');
 					if(data.status>0){
 						$("#editfile_modal").dialog({
@@ -864,7 +865,7 @@ function copyBar(path){
 function copyFileAttempt(path,move){
 	mcmove=move;
 	if(mcfile!=undefined && mcpath!=undefined){
-		$.getJSON(t_dn+"_tastydir/do.php?fcheck="+urlencode(path+'/'+mcfile)+"&cb=?", function(data){
+		$.getJSON(t_dn+"_tastydir/do.php?fcheck="+urlencode(path+'/'+mcfile), function(data){
 			if(data.exists){
 				if(data.type=='dir'){
 					$("#editfile_modal").html('<strong>'+mcfile.escape()+'</strong> already exists, and it\'s a folder, so overwriting it is a bad idea. If you\'d like to, you can remove the folder, then try '+(mcmove ? 'mov' : 'copy')+'ing the file again.');
@@ -933,7 +934,7 @@ function copyFileAttempt(path,move){
 	}
 }
 function copyFile(path){
-	$.getJSON(t_dn+"_tastydir/do.php?copy=copy&from="+urlencode(mcpath)+'&to='+urlencode(path+'/'+mcfile)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?copy=copy&from="+urlencode(mcpath)+'&to='+urlencode(path+'/'+mcfile), function(data){
 		if(data.status>0){
 			$("#editfile_modal").dialog({
 				title: 'File Copy Error - '+mcfile,
@@ -973,7 +974,7 @@ function moveFile(path,newname){
 	}else{
 		fpath=path;
 	}
-	$.getJSON(t_dn+"_tastydir/do.php?copy=move&from="+urlencode(mcpath)+'&to='+urlencode(fpath)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?copy=move&from="+urlencode(mcpath)+'&to='+urlencode(fpath), function(data){
 		if(data.status>0){
 			$("#editfile_modal").dialog({
 				title: 'File Move Error - '+mcfile,
@@ -1116,7 +1117,7 @@ function chmod(path, fperms){
 				'chmod': function() {
 					$(this).dialog('close');
 					if(changed){
-						$.getJSON(t_dn+"_tastydir/do.php?chmod="+urlencode(path)+"&to="+octal+"&cb=?", function(data){
+						$.getJSON(t_dn+"_tastydir/do.php?chmod="+urlencode(path)+"&to="+octal, function(data){
 							if(data.status>0){
 								$("#editfile_modal").dialog({
 									title: 'chmod Error - '+name.escape(),
@@ -1274,7 +1275,7 @@ function stopUpload(data){
 
 function lightboxImage(file){
 	var newheight, maxwidth, dialogwidth;
-	$.getJSON(t_dn+"_tastydir/do.php?getsize="+urlencode(file)+"&cb=?", function(data){
+	$.getJSON(t_dn+"_tastydir/do.php?getsize="+urlencode(file), function(data){
 		if(data.status>0){
 			$("#editfile_modal").dialog({
 				title: 'Image Error - '+basename(file),
