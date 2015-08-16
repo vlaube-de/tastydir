@@ -16,11 +16,16 @@ Documentation
 ------------
 Look at the /doc directory in your browser for detailed documentation.
 	
-Permission problems?
-------------
+Troubleshooting: Permission problems?
+-------------------------------------
 Your PHP scripts may be running as the 'nobody' user (you can check this in the info tooltip in Tastydir).
 This is common on many shared hosts, and it means that Tastydir won't be able to edit files created with FTP.
 SOLUTION: when you upload files with FTP or via cPanel, make sure you chmod them to 777.
+
+Alternatives
+------------
+
+http://sparkleshare.org/ - The private and open source Dropbox clone.
 
 Contact
 -------
@@ -42,3 +47,16 @@ Additional credits:
 	* Tipsy						MIT				http://plugins.jquery.com/project/tipsy
 - Other:
 	* jQuery UI CSS framework		MIT, GPL		http://jqueryui.com/themeroller/
+
+Todo
+----
+* better expand/collapse animation (maybe none at all)
+* BUG: sometimes the browser tries to upload the same file multiple times resulting in a "file already exists" error (have not yet reproduced this behaviour)
+
+Changelog
+---------
+* FEATURE: select multiple files in upload dialog
+* IMPROVEMENT: single click to open upload dialog
+* FEATURE: deploy script for testing
+* IMPROVEMENT: better delete icon http://www.famfamfam.com/lab/icons/silk/
+* REFACTORING replace jsonp and iframe with xhr https://gist.github.com/ebidel/2410898
